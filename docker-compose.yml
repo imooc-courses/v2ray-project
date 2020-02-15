@@ -1,0 +1,35 @@
+version: '3.1'
+services:
+    v2ray:
+        image: v2ray/official
+        restart: always
+        container_name: v2ray
+        networks:
+            - v2ray 
+        volumes:
+            - /opt/v2ray-project/v2ray/config.json:/etc/v2ray/config.json
+    nginx:
+        image: nginx:alpine
+        ports:
+            - 80:80
+            - 443:443
+        restart: always
+        container_name: nginx
+        networks:
+            - v2ray
+        volumes:
+            - /opt/v2ray-project/nginx/conf.d:/etc/nginx/conf.d
+            - /opt/v2ray-project/nginx/ssl:/etc/nginx/ssl
+            - /opt/v2ray-project/nginx/wwwroot:/wwwroot
+        depends_on:
+            - v2ray
+            - autopiano
+    autopiano:
+        image: uscwifi/autopiano:latest
+        restart: always
+        container_name: autopiano
+        networks:
+            - v2ray
+networks:
+    v2ray:
+        driver: bridge
