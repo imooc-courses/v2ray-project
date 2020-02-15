@@ -46,7 +46,7 @@ cat /dev/urandom | tr -dc '1-9a-zA-Z' | head -c10
 文件在nginx/conf.d
 
 ```bash
-# 修改域名和path即可
+# 修改域名和path及证书名称即可
 ```
 
 ### 六、docker-compose部署
