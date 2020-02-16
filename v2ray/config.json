@@ -7,15 +7,15 @@
       "settings": {
         "clients": [
           {
-            "id": "d0c5f676-85ee-471c-be84-7f09a5768fc0",
-            "alterId": 67
+            "id": "6f3d1f2c-6bc4-4a1f-a564-a3d10badf160",
+            "alterId": 73
           }
         ]
       },
       "streamSettings": {
         "network": "ws",
         "wsSettings": {
-        "path": "/SpfqzyoG/"
+        "path": "/fo3TrSb/"
         }
       }
     }

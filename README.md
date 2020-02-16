@@ -1,5 +1,7 @@
 ## 食用方法
 
+> 已经在阿里云临时服务器上测试可用，
+
 应该先部署docker环境和docker-compose
 
 ```bash
@@ -12,6 +14,11 @@ sudo curl -L "https://github.com/docker/compose/releases/download/1.25.3/docker-
 ### 一、克隆代码
 
 克隆代码到/opt目录
+
+```bash
+apt install git -y
+cd /opt && git clone https://github.com/imooc-courses/v2ray-project.git
+```
 
 ### 二、域名解析
 
@@ -26,19 +33,13 @@ total 8
 -rw-r--r-- 1 root root 1675 Feb 14 09:27 uscwifi.xyz.key
 ```
 
-### 四、修改config.json三个变量
+### 四、使用脚本初始化nginx,v2ray配置文件
 
-文件在v2ray/config.json
+文件在scripts/init.sh
 
 ```bash
-# uuid
-cat /proc/sys/kernel/random/uuid
-
-# altid
-cat /dev/urandom | tr -dc '1-9' | head -c2
-
-#path
-cat /dev/urandom | tr -dc '1-9a-zA-Z' | head -c10
+# 按照提示输入上面解析的域名即可，脚本生成了uuid，altid，path，并替换nginx和v2ray配置文件中的相应数值
+cd /opt/v2ray-project/scripts/ && bash init.sh
 ```
 
 ### 五、修改nginx配置文件
@@ -46,7 +47,9 @@ cat /dev/urandom | tr -dc '1-9a-zA-Z' | head -c10
 文件在nginx/conf.d
 
 ```bash
-# 修改域名和path及证书名称即可
+# 请手动修改证书和key文件的名字
+ssl_certificate       /etc/nginx/ssl/fullchain.cer;
+ssl_certificate_key   /etc/nginx/ssl/uscwifi.xyz.key;
 ```
 
 ### 六、docker-compose部署
