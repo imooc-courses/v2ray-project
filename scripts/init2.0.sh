@@ -8,6 +8,11 @@
 #Description:                Initialize the new server
 #Copyright (C):              2020 Copyright ©  站点名称  版权所有
 #************************************************************
+GREEN="\033[1;32m"
+RED="\033[1;31m"
+END_COLOR="\033[0m"
+
+
 DOMAIN_EXAMPLE='v2ray.v2ray.com'
 UUID=$(cat /proc/sys/kernel/random/uuid)
 ALTID=$(cat /dev/urandom | tr -dc '1-9' | head -c2)
@@ -84,7 +89,7 @@ PortDetect(){
 
 GenerateCert(){
     docker run --name acme -it -p 80:80 -v acme.sh:/acme.sh -d neilpang/acme.sh:latest ping 127.0.0.1 
-    docker exec -it acme "acme.sh --issue --standalone  -d $1"
+    docker exec -it acme acme.sh --issue --standalone  -d $1
     if [ $? != 0 ];then
         ErrorOutput "Generate certificate failed... Please check..."
 	docker rm -f acme
@@ -109,9 +114,6 @@ main(){
 main
 
 
-
-cd /opt && git clone https://github.com/imooc-courses/v2ray-project.git
-
 read -p "请输入你的域名: " -e -i ${DOMAIN_EXAMPLE} DOMAIN
 echo -e "你输入的域名是${GREEN} ${DOMAIN} ${END_COLOR}"
 
@@ -132,8 +134,8 @@ GenerateCert "${DOMAIN}"
 
 
 #拷贝证书
-docker run --rm -it  -v acme.sh:/acme.sh  -v /opt/v2ray-project/nginx/ssl/:/backup   neilpang/acme.sh "cp -a /acme.sh/${DOMAIN}/fullchain.cer /backup/"
-docker run --rm -it  -v acme.sh:/acme.sh  -v /opt/v2ray-project/nginx/ssl/:/backup   neilpang/acme.sh "cp -a /acme.sh/${DOMAIN}/${DOMAIN}.key /backup/"
+docker run --rm -it  -v acme.sh:/acme.sh  -v /opt/v2ray-project/nginx/ssl/:/backup   neilpang/acme.sh cp -a /acme.sh/${DOMAIN}/fullchain.cer /backup/
+docker run --rm -it  -v acme.sh:/acme.sh  -v /opt/v2ray-project/nginx/ssl/:/backup   neilpang/acme.sh cp -a /acme.sh/${DOMAIN}/${DOMAIN}.key /backup/
 
 #仅仅是为了输出内容好看点
 echo "正在生成UUID..."
@@ -171,4 +173,3 @@ sed -i "/alterId/s@73@${ALTID}@" 1.json
 sed -i "/path/s@fo3TrSb@${path}@" 1.json
 vmess_link="vmess://$(cat 1.json | base64 -w 0)"
 echo -e "${GREEN} ${vmess_link} ${END_COLOR}"
-
