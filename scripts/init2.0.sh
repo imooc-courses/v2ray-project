@@ -93,13 +93,13 @@ dependency_install(){
     ${INS} install wget git lsof curl unzip  -y    
 }
 
+
 main(){
     rootness
     check_system
     dependency_install
     installSoftware
     PortDetect
-    GenerateCert
 }
 main
 
@@ -111,6 +111,20 @@ read -p "请输入你的域名: " -e -i ${DOMAIN_EXAMPLE} DOMAIN
 echo -e "你输入的域名是${GREEN} ${DOMAIN} ${END_COLOR}"
 
 read -n1 -r -p "Press any key to continue..."
+
+#测试域名是否解析成功
+RealIP=$(curl -s ip.sb)
+DOMAIN_IP=`ping -c1 ${DOMAIN} | sed '1{s/[^(]*(//;s/).*//;q}'`
+if [[ "${RealIP}" == "${DOMAIN_IP}" ]];then
+    StandardOutput "域名解析测试成功..."
+else
+    ErrorOutput "域名解析测试失败，是否继续？如果继续，生成证书可能失败..."
+    read -n1 -r -p "你可以按下任意键继续...或者CTRL+C终止脚本..."
+fi
+
+#生成证书
+GenerateCert "${DOMAIN}"
+
 
 #拷贝证书
 docker run --rm -it  -v acme.sh:/acme.sh  -v /opt/v2ray-project/nginx/ssl/:/backup   neilpang/acme.sh "cp -a /acme.sh/${DOMAIN}/fullchain.cer /backup/"
