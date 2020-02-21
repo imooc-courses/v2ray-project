@@ -59,12 +59,17 @@ rootness(){
 
 installSoftware(){
     if [[ -n `command -v docker` ]]; then
+        StandardOutput "Docker is already installed,stop install..."
+    else
         curl -fsSL get.docker.com | bash 
 	sleep 3
-	service docker restart
-        systemctl enable docker
     fi
+    service docker restart
+    systemctl enable docker
+
     if [[ -n `command -v docker-compose` ]]; then
+        StandardOutput "Docker-compose is already installed,stop install..."
+    else
         TAG_URL="https://api.github.com/repos/docker/compose/releases/latest"
 	NEW_VER=`curl ${PROXY} -s ${TAG_URL} --connect-timeout 10| grep 'tag_name' | head -1 | cut -d\" -f4`
 	curl -L "https://github.com/docker/compose/releases/download/${NEW_VER}/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose && sudo chmod +x /usr/local/bin/docker-compose
