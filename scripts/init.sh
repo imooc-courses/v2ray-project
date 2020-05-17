@@ -36,11 +36,11 @@ GenerateCert(){
     docker run --name acme -it -p 80:80 -v acme.sh:/acme.sh -d neilpang/acme.sh:latest ping 127.0.0.1 
     docker exec -it acme acme.sh --issue --standalone  -d $1
     if [ $? != 0 ];then
-        ErrorOutput "Generate certificate failed... Please check..."
+        echo -e "${RED}Generate certificate failed... Please check......${END_COLOR}"
 	docker rm -f acme
 	exit 3
     fi
-    StandardOutput "Generate certificate success..."
+    echo -e "${GREEN}Generate certificate success......${END_COLOR}"
     docker rm -f acme
 }
 
