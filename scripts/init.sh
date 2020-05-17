@@ -19,7 +19,38 @@ path=$(cat /dev/urandom | tr -dc '1-9a-z' | head -c10)
 read -p "请输入你的域名: " -e -i ${DOMAIN_EXAMPLE} DOMAIN
 echo -e "你输入的域名是${GREEN} ${DOMAIN} ${END_COLOR}"
 
+#检测域名是否解析成功
+DOMAIN_IP=`ping -c1 ${DOMAIN} | sed '1{s/[^(]*(//;s/).*//;q}'`
+SERVER_IP=$(curl -s ip.sb)
+if [ ${DOMAIN_IP} != ${SERVER_IP} ];then
+    echo -e "${RED}域名解析检测失败，请检查域名解析是否成功再执行脚本...${END_COLOR}"
+    exit 1
+else
+    echo -e "${GREEN}域名解析检测成功...${END_COLOR}"
+fi
+
 read -n1 -r -p "Press any key to continue..."
+
+#生成证书
+GenerateCert(){
+    docker run --name acme -it -p 80:80 -v acme.sh:/acme.sh -d neilpang/acme.sh:latest ping 127.0.0.1 
+    docker exec -it acme acme.sh --issue --standalone  -d $1
+    if [ $? != 0 ];then
+        ErrorOutput "Generate certificate failed... Please check..."
+	docker rm -f acme
+	exit 3
+    fi
+    StandardOutput "Generate certificate success..."
+    docker rm -f acme
+}
+
+GenerateCert "${DOMAIN}"
+
+#拷贝证书
+docker run --rm -it  -v acme.sh:/acme.sh  -v /opt/v2ray-project/nginx/ssl/:/backup   neilpang/acme.sh cp -a /acme.sh/${DOMAIN}/fullchain.cer /backup/
+docker run --rm -it  -v acme.sh:/acme.sh  -v /opt/v2ray-project/nginx/ssl/:/backup   neilpang/acme.sh cp -a /acme.sh/${DOMAIN}/${DOMAIN}.key /backup/
+
+
 
 #仅仅是为了输出内容好看点
 echo "正在生成UUID..."
