@@ -14,7 +14,7 @@ services:
             - 80:80
             - 443:443
         restart: always
-        container_name: daohang
+        container_name: nginx
         networks:
             - v2ray
         volumes:
@@ -28,7 +28,7 @@ services:
         #image: uscwifi/autopiano:latest
         image: uscwifi/daohang:latest
         restart: always
-        container_name: autopiano
+        container_name: daohang
         networks:
             - v2ray
 networks:
