@@ -83,7 +83,7 @@ echo -e "生成v2ray配置文件完成: ${GREEN} v2ray/config.json ${END_COLOR}"
 echo "打印vmess链接..."
 sed -i "s@v2ray.v2ray.com@${DOMAIN}@" 1.json
 sed -i "s@6f3d1f2c-6bc4-4a1f-a564-a3d10badf160@${UUID}@" 1.json
-sed -i "/alterId/s@73@${ALTID}@" 1.json
+sed -i "/aid/s@73@${ALTID}@" 1.json
 sed -i "/path/s@fo3TrSb@${path}@" 1.json
 vmess_link="vmess://$(cat 1.json | base64 -w 0)"
 echo -e "${GREEN} ${vmess_link} ${END_COLOR}"
